@@ -24,11 +24,7 @@ class WangYiYun_Hot:
         data_cat = [cat.get_attribute("data-cat") for cat in list]
         # print("所有分类:",data_cat)
         # print("分类总数量:",len(data_cat))
-        # 根据分类获取歌单信息，并循环翻页
-        self.get_song_list(data_cat)
 
-    # 提取各分类的歌单信息
-    def get_song_list(self, data_cat):
         # 如果没有网易云歌单文件夹，则创建
         if not os.path.exists("网易云歌单"):
             os.mkdir("网易云歌单")
@@ -63,13 +59,18 @@ class WangYiYun_Hot:
                         str = ','.join([image, title, number, music, user, userinfo])
                         # print(str)
                         f.write(str + "\n")  # 将数据追加写入txt
-                    print("{}类别第{}页歌单数量:{}成功", len(li_list))
+                    page = offset / 35 + 1
+                    print("{}类别 第{}页 {}张歌单写入成功".format(cat, int(page), len(li_list)))
                     self.driver.close()  # 关闭当前窗口
                     self.driver.switch_to.window(handles[0])  # 切换回第一句柄窗口,目的是继续执行当前窗口的js代码，否则无法执行
                     offset += 35  # 改变offset参数数值
                     # 如果本页获取不到数据则停止获取此类歌单信息
                     if len(li_list) == 0:
                         break
+
+    # 根据分类获取歌单信息，并循环翻页
+    def get_song_list(self):
+        data_cat = self.get_data_cat()
 
     def run(self):
         # 1.发送请求
@@ -78,6 +79,8 @@ class WangYiYun_Hot:
         self.driver.maximize_window()
         # 2.提取歌单分类数据
         self.get_data_cat()
+        # # 3.根据分类获取歌单信息，并循环翻页
+        # self.get_song_list()
         # 休眠3秒
         time.sleep(3)
         # 关闭浏览器
@@ -85,5 +88,5 @@ class WangYiYun_Hot:
 
 
 if __name__ == "__main__":
-    douyu = WangYiYun_Hot()
-    douyu.run()
+    hot = WangYiYun_Hot()
+    hot.run()
